@@ -1,0 +1,255 @@
+
+JAVA 1.8 Features:
+Functional Interface:
+The Interface contains  only one abstarct method  but can have multiple default methods and static methods is called functional inteface.
+ex:
+Runnable
+Callable
+Comparable
+Comparator
+Public Interface MyFunctionalInterface
+{
+public abstract void m1();
+default void m1(){ }
+default void m2(){}
+}
+predefined Functional Interfaces:
+Predicate
+Function
+Consumer
+Suppiler
+two argument predefined  functional interface:
+BiPredicate
+BiFunction
+BiConsumer
+Predefined primitive Function interfaces:
+IntPredicate
+IntFunction
+IntConsumer
+above interfaces are available in java.util.packages:
+Predicate:
+conditional check 
+public abstract boolean  test( T t);  --> it will  take one input and return boolean value.
+Ex1
+Predicate<Integer> p=a->a%2==0
+p.test(20);
+Ex2
+String s[]={"amara","simha","simha1","simha2","simha3"}
+Predicate<String>  p= s->s.length()>5;
+for(String s1:s)
+{
+if(p.test()){System.out.println(s1);}
+}
+ex3:
+p1 ---> to check  whether the number  is even  or not.
+p2 ---> to check  wheather the number >10 or not.
+p1.and(p2).test(34);
+Predicate Joining:
+p1.or p2() --> wheather first condition is satisfied or second condition is satisfied
+p1.negate();  opposite of p1
+Function:
+ i have some requirement..  i have one input and perform some operation and produce some result  then we are going to use Function.
+Interface Function<T,R>
+{
+public R apply(T t)
+}
+ex :  pass the String and produce the length of the string :
+Function<String,Integer> f=(name)->name.length();
+f.apply("Simhachalam");
+Function Chaining:
+f1.andThen(f2).apply(i);  --> first f1 apply and then f2
+f1.compose(f2).apply(i) --> first f2 apply and then f1
+Ex:
+Function<Integer,Integer> f1=i->2*i;
+Function<Integer,Integer> f2=i->i*i*i;
+System.out.println(f1.andthen(f2).apply(2));  output 64
+System.out.println(f1.compose(f2).apply(2));  output : 16
+Consumer: 
+it will takes input  and return void.
+Consumer<T>
+Examples:
+Consumer<String> c=s->System.out.println(s);
+c.accept("Simhachalam");
+Suppiler:
+Just supply the my required Objects and it wont take any input   -> Supplier
+interafce Supplier<R>{
+public R get(){}
+}
+Note:  all the above functional interafce takes only one input argument and return values
+suppose if we need two input values then we can use below functional intefaces:
+BiPredicate
+  BiPredicate is exactly  same as Predicate except  that it will take 2 input arguments.
+inteface  BiPredicate<T1 t1, T2 t2>
+{
+public boolean test(T1 t1,T2 t2){}
+}
+BiFunction
+public
+BiFunction<Integer,String,Employee> emp=(empNo,name)->new Employee(empNo,name)
+Employee e1=emp.apply(100,"Simhachalam");
+
+BiConsumer
+public BiConsumer<Employee,Double> emp=(emp,d)->emp.getSalary()+d;
+it will take two input parameter  and return void.  so that it will consume.
+------------------------------------------------------------------------------------------------------------------------
+ Predicate<Integer> p=(i)->1%2==0;
+p.test(20);
+here iam providing the int (Primitive values to the prdicate function) but predicate function accepting the Integer value (Object). so that internally converting into the primitive value.
+Int  -->Integer -->int
+autoboxing  and autounboxing
+so that it will give big performance problem.  this case we are going to take below function insteading going predicate function
+intPredicate  functional Inteface we can take for above examples.
+if we want to use double then doublePredicate
+Premitive Predicate types:
+        IntPredicate
+        DoublePredicate
+        LongPredicate 
+Premitive Function Types:
+         DoubleFunction    --can take input type as double and return  type can be any type.
+         intFunction
+         longFunction
+DoubleToIntFunction  ->can   input type as Double and return type as int 
+ and Method conatin this function  as : applyAsInt()
+DoubleToLongFunction  --> input type as Double and return type as Long
+and Method contain this function as s: applyAsLong();
+IntToDoubleFunction -->input type as int and return type as Double and  method contain this function as ApplyAsDouble()
+LongToIntFunction --> input type as Long and return type as int and method contain this function as ApplyAsInt()
+ToIntFunction  --> return type as int and input can be anything
+ToDoubleFunction --> return type as double and  input can be anything
+ToLongFunction --> return type as Long and input type can be anything.
+toIntBiFunction --> return type as int and input can be anything
+toLongBiFunction --> return type as Long and input type can be anything.
+toDoubleBiFunction --> return type as double and  input can be anything
+Premitive Consume Types:
+intConsumer - > input type a input 
+LongConsumer ->input type a Long
+DoubleConsumer ->input type a Double
+Primitive types of Supplier:
+BooleanSupplier    -- getAsBoolean
+intSupplier  -- getAsInt
+LongSupplier  --  getAsLong
+BinaryOperator.. we can use  if both  input and return type same then can use the Binary Operator.
+BiFUnction can take two input argument  and return something.
+if two input and and return type same then we can use Binary Operator.
+UnaryOperator:  we   input and output always same then we can use unaryOperator.
+
+Lambda Expression:
+always  once we write lambda expression  and to call the lambda expressoin then we should call from Functional inteface.
+Functional interafce  caontain single abstract method
+
+@FunctionalInterface
+Interface A{
+public void  m1();
+}
+@FunctionalInterface
+interface extends A
+{
+}
+above one is perfectly valid scenario.
+no .class files are genarted by lambda expression.
+
+
+Default and Static method:
+default method can be ovveride but we can not default key word in the sub class.
+we can use 
+public void m1()
+{
+}
+static methods are can not be overidden.
+
+Collections and Stream:
+ if we want to represent group of objects into single entity then we should go for collection:
+if we want process  the objects from collection  then we can use Stream.
+ArrayList al=new ArrsyList<>();
+al.add(10);
+al.add(30);
+al.add(50);
+al.add(30);
+Stream stream=al.stream();
+List<Integer>  lst=l.stream().filter(i-i%2==0).collect(collectors.toList());
+if we want to add some action on the every object in the collection then we can use the  MAP.
+filter(Predicate)  - condition check
+Map(Function)  --> add some action on the every object in the collection.
+
+Methdos:
+filter()
+map()
+stream()
+collect()
+count()  --> how many elements are there in your stream then we can use count.
+sorted()  -> by default it will sort ascending order 
+stream().sorted().collect(collectors.toList());
+
+stream().sorted((i1,i2)->(i1<i2)?1:(i1>i2)?-1:0).collect(collectors.toList());
+
+min(comparator)  stream.min((i1,i2)->i1.compaeTo(i2)).get();
+max(comparator) stream.min((i1,i2)->-i1.compaeTo(i2)).get();
+forEcah()  it is using  consumer internally.
+
+where ever group of values are there then we can happily go for Stream concepts:
+streams conectpts are apply can Arrays  and Collections and Strings
+stream.oF()
+
+Optional Class:
+streams  Optional class having three static methods:
+empty
+oF
+oFNullable
+Three aways to create optional object which i was mentioned above.
+empty and oF and oFNullable
+Optional<Object> emptyOptional=Optional.empty();
+optional.oF(here we can pass object and String) then return particular passing object or String.
+Optional<String> optional=Optional.oF(string)
+if the object is not giving null value then we can  use this method. otherwise we can use below which i have mentioned in the below.
+Optional.oFnullable(customer.getEmail())  here it wont throw nullPointer exception
+
+we can  not call the get method directly if we call get method then we may get  "No Such element Exception"
+before that we can call 
+isPresent()  --> it will give true and false if value is there then it will give true or else give false.
+orElse() --> optional.orElse("simhachalam") --> if optional object is empty  then it will return orElse method argument value.
+or if value is present then it will return that value.
+
+if we know some exception need to throw if value is not empty and null then we can use below method:
+
+orElseThrow()--> it will Supplier functional Interface.
+Interface
+orElseGet() --> it will take supplier argument
+here we are checking the value in the optional object if value is there the we can do upper case it  or else we will give some default value.
+oprional.map(String::upperCase()).oRElseGet(()->"Default Email......"));
+
+Map  and Reduce:
+Map  --> transforming data.
+Reduce --> Aggregating the data.
+ex: Stream [2,3,7,6,9,5]
+Map() --> Transform Stream object to Stream on int.
+Reduce() -> combine stream of int to produce the sum result.
+reduce(t identity,BinaryOperator<t> accumulator);
+t is initial value and accumulator is a function to combine to two values.
+Integer sumresult=stream.oF(1,6,7,3,2).reduce(0,(1,2)->a+b);
+Numbers.stream().reduce(Integer::sum);
+Integer maxvalue=numbers.stream().reduce(0,(a,b)->a>b?a:b);	
+mapToDouble - it return  the double of stream consisting of the  results of applying the given function to the elements of this Stream.
+Map and FlatMap().
+Map method is used for data transformation and flatMap is used for data transformation and flatering.
+its mapper function produces single value for each input value. hence it is also called one to one mapping.
+map will take input as stream and return another stream.
+FlatMap --> it will take stream of  stream as input  and return stream <R>.
+it mapper function produces multiple values for each input value hence it is called  one -To- Many Mapping.
+stream.of("a","b","c","d"); all are in lower case and want to transfor to  uppper case. 
+it is return another transformation like upper case.
+--> [A,B,C,D]
+Transform data from Lower case to Upper Case.
+[[1,2],[3,4],[5,6],[7,8]]
+above stream contains stream of  multiple stream then we can use the flattering map.
+and the return type is another stream like bleow.
+[1,2,3,4,5,6,7,8]
+here converting stream of stream into single stream.
+
+public boolean isPresent()
+Return true if there is a value present, otherwise false.
+Returns:
+true if there is a value present, otherwise false
+
+
+
+

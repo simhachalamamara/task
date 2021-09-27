@@ -1,0 +1,73 @@
+how we can connect multiple microservice to each other:
+
+spring cloud config server
+
+
+spring.cloud.config.server.git.uri="http"  -- this application is connected to git repository.
+
+
+Normal application we can connect:
+
+
+spring config client
+
+spring.config.import=oiptional:configserver:http://localhost:8888
+
+different profile activation:
+------------------------------
+
+spring.application.name=limits-service
+spring.profile.active=dev
+
+spring.cloud.config.profile=dev
+
+
+
+in git :
+
+limits-service-dev.properties
+
+
+spring-cloud-config -- we can use for fecthing env variables
+
+
+
+//  instead of restTemplate we can use feign rest client:
+
+for that we have add below dependies:
+
+spring-cloud-openfeign
+
+
+
+and we need to create one inteface and annoated with @feignClient(name="conneting application name")
+
+and that appi we need write
+
+@GetMapping("/currency-exchange/from/{from}/{to}
+
+
+
+/// if we want talk multiple applications are talking to each other the we need to configure service registory:
+
+
+ie called naming server: Eureka naming server
+
+
+all the application server register with naming server:
+
+
+
+
+previously it was load balancing is Ribbon now its spring cloud load balancing
+
+previously api gateways was zoul now its spring cloud api gateway
+
+
+
+resilience --> it is retry when it will get failure happenes
+
+
+
+
+

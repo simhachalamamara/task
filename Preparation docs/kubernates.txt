@@ -1,0 +1,301 @@
+kubectl create deplyment exchange-service --image=
+
+kubectl expose deployment exchage-service  type=loadbalancer  --port=
+
+kubectl apply -f deployemnt.yaml
+
+
+
+Cluster having  -->master Node and worker node
+
+master node --> manages the cluster  and worker node run your application.
+
+K8s -> kubernates  k and after 8letters 
+
+
+Kubernates on CLoud:
+
+AKS, Amazon EKS and GKE (Google Kubernates Enginee)
+
+
+Cluster size 3 means that 3 nodes.
+
+2 ways to connect google cloud cluster:
+
+
+1. activate cloud shell in cloud
+
+2. download the kubernate client
+
+
+after that by using command line .. we need  to connect to the cluster
+
+click connect cluster on the UI  and there we can see link and copy and paste it.
+
+Kubectl  --> kubernate controller
+
+Command:
+
+kubectl --version
+
+
+deploying apllication in to cluster for that use below command:
+
+
+
+
+cmd --->  kubectl create deplyment exchange-service --image=
+
+                         (name)                    (docker image path)
+
+
+after that we have deployed the application into clustuer but we have to exposed the application into outside world.
+
+
+cmd----> kubectl expose deployment exchage-service  --type=loadbalancer  --port=9090
+
+
+
+/// events:
+
+
+cmd --> kubectl get events
+
+
+here we can see --> pods , conatiner , replicaset, Deployment , Services.
+
+kubectl get pods, kubectl get conatiner , kubectl get replicaset, kubectl get deployment , kubectl get service
+
+kubectl create deployment --> deployment, replicaset and pod
+
+kubectl expose deployment ---> service
+
+
+PODS:
+-------------------------------------------
+
+diagram:
+
+container1, conatiner 2                 container1, conatiner 2
+
+pod1                                      pod2
+
+
+Node
+
+
+-->node contains different pods
+--> pod conatins multiple conatiner.
+
+kubectl describe podname --> it will give information
+
+delete pod:
+
+kubectl delete pods pidsid.
+
+kubectl get pods -o wide
+
+
+Replicaset.
+----------------------
+
+replicaset always monitor the Pods.
+
+if lesser than pods then create replica of pod and run
+
+
+if we want to two replica set then we have to set below command.
+
+kubectl scale deployment hell0-world-rest-api --replicas=3
+
+
+
+--------------------------------------
+
+Deployment:
+
+
+
+cmd -->  kubectl set image deployment hello-world-rest-api(deployemnt name) hello-world-rest-api(conatiner name)="image path"
+
+if it is new deployemngt and create new replica set  and crete pod
+
+
+application_name_service_host   --> we will get the host name
+
+
+
+
+
+
+
+YAML----- configuration:
+
+
+go to specific folder in that project.
+
+
+yaml for Deployement:
+
+
+cmd --> kubectl get deployment currency-exchange -o yaml >> deployment.yaml
+
+--> save to deployment.yaml file
+
+
+Service for yaml:
+
+
+cmd --> kubectl get service currency-exchange -o yaml >> service.yaml
+
+--> save to service.yaml file
+
+under spec:
+
+we can see replica :1 then we can change any number ex 2
+
+the chnages yaml file we need to commit to google cloud on kubernative cluster right for that we need to run below command:
+
+cmd --> kubectl apply -f deployemnt.yaml
+
+we can see difference previous and present:
+
+cmd --> kubectl diff -f deployemnt.yaml
+
+
+after that it will create 2 instance are created.
+
+
+
+/// enabling logging //.///
+
+
+we have enable api and services:  and also stack drivers. under stack driver , we have enable all the services.
+
+
+all the services we have enable before micro services deployemnt.
+
+
+/// for deleting app we have to use below commands:
+
+
+kubectl delete all -l app=currency-conversion
+
+and then we have to run below commmand  to check all are deleted or not.
+
+cmd --> kubectl get All
+
+here we can see only one cluster listed.
+
+
+cmd --> kubectl get service --watch
+
+
+/// creating customized exchnage URI
+
+under conatiner we have create env:
+
+-name : currency_exchange_URI
+value: http://currency-exchange (service)
+
+instead of above we can do centralized config map.
+
+
+kubectl create configmap currency-conversion --from-literal=currenccy_exchange_uri=http://servicename
+
+if you want to get YAML configuration. we can use below command:
+
+kubectl get configmap currency-conversion -o YAML >>config.yaml
+
+then we need to add the configurstion deployment.yaml.
+
+
+and then link to conatiner
+
+under container:
+
+envFrom:
+  - configMapRef:
+    name:currency-conversion
+
+
+/// find logs:
+
+ go to cluster  and then under feature we can see View logs
+
+and then go to kubernate conatiner:
+
+
+// Deployemnt:  we have ensure no downtime while deployemnt:
+
+
+how to rollout version:
+
+cmd --> kubectl rollout undo deploymemnt currency-exchange --to-revision=1
+
+
+from v1 to v2 -- we can see littel time down.
+
+we can handle by using liveness and readiness
+
+
+for this  we need to configure deployemnt.yaml file:
+
+under container:
+
+readinessProbe:
+    httpget:
+         port:8000
+         path:/actutator/health/readiness
+
+livenessProbe:
+    httpget:
+         port:8000
+         path:/actutator/health/liveness
+
+
+///  how to scale deployemnt by automaticaaly while heavy loading to the applicatioon
+
+kubectl scale deployemnt currency-exchange  --replicas=2  (manually)
+
+kubectl autoscale deployemnt currency-exchange --min=1 --max=3 --cpu-percentage=70
+
+minimum one pod and maximum 3 pods
+
+kubectl top pod  ( we can see how much cpu utilized)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

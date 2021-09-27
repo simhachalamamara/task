@@ -1,0 +1,125 @@
+docker images
+
+docker conatner ls
+
+docker container ls -a
+
+
+docker run -d "repo/image"
+
+decker logs id of container
+
+
+docker tag "repo/image existing" "repo/image:featuer" 
+
+docker  pull   " means it will fetch image  the data from repo"
+
+docker run  "means it will fectch the image from repo and run it."
+
+we can serch the images here:
+
+docker search mysql 
+
+
+docker image history  idof the image or repostory of the image of tag
+
+docker images inspect idOfContainer
+
+
+docker image remove imageId
+
+
+docker container stop "id"
+
+
+docker continer ls -a  "to ensure there are no containers are stopped in the list containers"
+
+
+
+docker  run -p 5000(application port):50001(container port) repo/image
+
+
+docker container inspect   -  here we will see all the details of projects
+
+docker container unpause 6478
+
+
+docker container prune  -- it will remove all the stoped conatiner
+
+
+docker container prune.
+
+
+--restart=always   --> after stopping the docker.. when will restart the docker then automatically it will start the conatiner.
+
+
+stop command .. gracefully shutdown the container  (it will take some time to complete)
+
+docker conatiner logs -f 1b1
+
+
+docker conatiner kill id  (it wont take any time) immediatley stopped
+
+
+
+
+docker Evenets:
+
+
+docker events    (command will give container netweork and volume created  Etc...)
+
+
+docker stats   it will give how many conatiner are running (how much memeory and cpu utilization consumtion)
+
+
+docker top conatiner_id  (it will give process)
+
+
+
+docker run -p 5000:5001 -m 512m    --cpu-quota 5000 -d repo/application
+
+5000(5%)
+
+
+
+docker System df --> it will give the all the information about images and conatiner
+
+
+
+
+
+distrubuted tracing server ... Zipkin (it will trace the all the microsrvices)
+
+
+<configuration>
+				<image>
+				<name>alpine/git/mmv2-${project.artifactId}:${project.version}</name>
+				</image>
+				<pullPolicy>IF_NOT_PRESENT</pullPolicy>
+				</configuration>
+
+
+
+[INFO] Successfully built image 'docker.io/alpine/git/mmv1-naming-server:0.0.1-SNAPSHOT'
+
+[INFO] Successfully built image 'docker.io/alpine/git/mmv4-currency-conversion-service:0.0.1-SNAPSHOT'
+
+[INFO] Successfully built image 'docker.io/alpine/git/mmv5-api-gateway:0.0.1-SNAPSHOT'
+
+docker.io/alpine/git/mmv10-currency-conversion-service:0.0.1-SNAPSHOT
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+

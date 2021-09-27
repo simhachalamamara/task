@@ -1,0 +1,571 @@
+Spring Security:
+----------------------------------
+
+Spring Security
+
+
+once we login into appliaction at that time jsessionId will create and after that no need to pass any credentional.
+
+JESSIONID will store as cookie
+
+
+JSESSIONID by default it is genarated.
+
+
+Spring Security Flow:
+-----------------------
+
+step1 : userEnter Credentional
+
+step2: Authentication Filter (Authentication object will build) all the validation will be validated in the first step.
+
+
+step3: Authentication Manager (it will identified what is most approate authentication provide ex Ldap and DAo, OTP)
+
+step4:  Authentication Provider --> all the logic we need to implement here)
+
+authentication provide it will use below interface:
+
+User Details Service --> it will hold user schema how my user details service look like-->OTP and username and password and multi factor authentication.
+
+Password Encoder  -> encrypt and decrypt password will be use here.
+
+
+Authentication object will be stored in the security context.
+
+
+
+// checking Default Security configuration:
+
+
+step1 : we need to extends WebSecurityConfigurationAdapter
+
+step2: we have ovveride some of below methos in the WebSecurirtyConfiguartionAdapter class.
+
+---->   configure(HttpSecurity http)
+
+
+this is methiod we can use security of the our endpoints:
+
+http.authorizationRequest().antMatcher("/myaccount").authenticated()
+
+.antMatcher("/contact").permitAll().and().formLogin().and().httpBasic();
+
+---->   configure(AuthenticationManagerBuilder auth)
+
+here we can write logic of password validation
+
+auth.inMemoryAuthenticatio().withUser("Admin").password("Admin").authorities("Admin").passwordEncoder(NoOpasswordEncoder.getInstance());
+
+
+if we are not configure then  spring will give error. because spring will dont know how it will validate password .
+
+
+
+
+and Spring will have another away of storing our credentional in our application:
+
+
+InmemmoryUserDetailMananger userDetailsService=new InMemoryUserDetailsManager();
+
+UserDetails user=User.withUserName().password.authority().build();
+
+UserDetaillService.createUser(user);
+
+auth.userDetailsService(userDetailsService);
+
+
+InmemoryUserDetailManager            JDBCUserDetailsManager       LDAPUserDetailsManager
+
+
+
+                          UserDetailsManager     (createUser,DeleteUser,updateUser,ChangePassword)
+
+
+
+                           UserDetailsService    (LoadUserBYUserName)
+
+
+
+                           UserDetails   (getUserName(),getPassword(),getAuthority(),isAccountNonExpired(),
+                                          isAccountNonExpired(),isAccountNonLoacked(),isEnabled())
+
+
+
+
+DAOAuthenticatioProvider will call the UserDetailsSerice to fecth the userDetails from DB.
+
+if we want to upadte and delete user then we can use UserDetailsManager
+
+
+SpringSecurity have provide the three implementaion of UserDetailsManager.
+
+
+InMemoryUserDetailsManager
+
+JDBCUSerDetailsManager
+
+LDAPUserdetailsManager
+
+
+
+PasswordEncoder:  (Interface)
+------------------------------------------------------------
+
+
+BCrypt Password Encoder
+
+Scrypt Password Encoder  --  it will use RealTime
+
+Scrypt Password Encoder constructor takes five arguments:
+
+
+cpucost  memory cost  parallleization  key lenth   saltLength
+
+Encode and Matches and checkPw
+Bcrypt --> checkPw method it will validate internally the UI password and database password  (databse password decrypt)
+
+
+
+
+------------------------------------------------------------------------------------------------------
+
+Authentication Provider (Interface)  DAOAuthenticationProvider:
+
+if we want to implement Authenetication Provider then we have to ptovide custom logic for Authentication object.
+
+
+methods:
+
+authentication()
+support()
+
+
+
+Authentication Manager:  implemnents providerManager class
+
+will have only one Method ie authenticate:
+
+
+it will check and pass the particular Provider (ex userName and password password and OTP and FingerPrints)
+
+
+---------------------------------------------------------------------------------------------------
+
+
+Authentication and Principal:
+
+both are inteface:
+
+Authentication is an interface it is maintained by Spring security
+
+
+
+internally it will authenticate the authenticate object by below steps:
+
+it will take UserDetails and convert into User Object.  and  after that UserObject will pass the createSuccessfullAuthentication() method  return type of the Method  is Authentication Object\
+
+
+Authentication is Inteface and Implemented class is UserNameAndPasswordAuthenticationToken class
+
+
+
+----------------------------------------------------------------------------------------
+
+
+CORS :  Cross-Origin Resources Sharing
+
+
+BY default .two diffreent domain application wont talk eachOther. due to CORS Policy 
+
+
+by these we can achiven by configuration below  things in the backend appliaction
+
+Access-COntrol-allow-Orgin:   (*
+Access-COntrol-allow-Method
+
+Access-COntrol-allow-Header
+
+Access-COntrol-allow-Credentials:
+
+Access-COntrol-Max-age:
+
+
+http.cors.configurationSource(new CorsConfigurationSources()
+{
+getCorsCOnfiguration(HttpServletRequest request)
+
+{
+
+CorsConfiguration config=new corsConfigutration();
+
+config.setAllowedOrigin(Collection.singleToneList("http://locathost:9090"));
+----
+---
+return config;
+}
+
+}
+
+
+
+
+CSRF: Cross-SIte Requesr Forgery:
+
+JessionId will be stored into cokkies then attacker will attck the cookie and then modify the password.
+
+for that we hate genarate the token  from backend .and it wont store in browser.
+
+
+for that we need to disbale from backend application
+
+
+
+instead of diable also we can do that:
+
+
+for that we need  to store the cookie in the front side and passing every request to server
+
+
+and().csrf().csrfTokenRepository.withHttpOnlyfalsy().
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+
+OAUTH2.0 Framework:
+
+
+different type of Grant type and Auth flow:
+
+1. Authorization code Grant type 
+
+2. Implict grant type flow
+
+3. Resource owner credentional grant type
+
+4. CLient credentioanl grant type
+
+5. Refresh token grant type 
+
+
+Autherization Code:
+
+
+we need to below parameters to Authorization server:
+
+client_id -  it will genaraete after register google and gitHub
+
+redirect_url - 
+
+scope
+
+state
+
+response_type - code  --> so auth server will understand .. client need  to Autherization code 
+
+
+for taken we have to pass the below parameter to Auth server:
+
+'
+code
+
+client_id and secreateId
+
+Grant_type
+
+redirect_uri
+
+final we will the token from the auth server
+
+inorder to get access token we have accessed auth server two times.
+
+
+Implict Grant Type:
+---------------------------------------------------------------
+
+ this one is clubed into single step:
+
+client_id -  it will genaraete after register google and gitHub
+
+redirect_url - 
+
+scope
+
+state
+
+response_type -Token  (" this is Implict Grant Type)
+
+
+this is very less security then Authorization Code grant type.
+
+-----------------------------------------------------------------------------
+
+Resource Owner Credentioanl Grant Type:
+
+
+client and auth and resource server same organaziation  then we can use Resource Owner Credentional Grant type
+
+
+step1 : user Enter userName and password  and client will go to check auth server and resource server
+
+
+
+client_id and secreateId
+
+scope
+
+userName and Password 
+
+Grant_type  'Password' which means want follow Password grant type
+
+---------------------------------------------------------------------------------------------------
+
+Client Credentional Grant type:
+
+
+we can use between apis in the different application
+
+here there is no involvement user and resource owner 
+
+
+
+client_id and secreateId
+
+scope
+
+Grant_type  'Client_Credential' which means want follow Client Credentinal grant type
+
+
+
+Realm - here we can create env profile and client and roles and users
+
+
+-----------------------------------------------------------------------------------------------------
+
+
+Refresh Token grant type:
+
+
+
+client_id and secreateId
+
+refresh_token
+
+scope
+
+Grant_type  'refresh_token' which means want follow Client Credentinal grant type
+
+---------------------------------------------------------------------------------------------------
+
+
+auth server and resurce server we can connect through apis or common database.
+
+
+
+
+
+
+
+
+OpenId connect:
+
+it has been implemeented on top of oAuth2 framework.
+
+access token and Id Token it will reposne
+
+
+KeyCLock authorization serevr.. we can integarted with any social network and LDAP and saml
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+
+KeyClock - --> acting as Authorization server:
+
+1. it is openSource and access management product
+
+2. it is impementing LDAP and Single-Sign on and Social Login
+
+3. OpenId connect and oAuth2
+
+
+Identity-Access Management - okta and Amazon
+
+
+KeyCLock is also Identity-Access Management
+
+keyclock is support from RedHat Team 
+
+
+we need to download the ZIP file and extarct and go to bin folder and run standalone.sh
+
+once the server is started and then we can go to chrome browser and 
+
+localhost:8080/auth/ 
+
+and after that we need to create admin account and refresh same page, then we can see the admin is created.
+
+intrenally H2 database and if we want MysQl and sql  in  the production then we can implement.
+
+
+
+Realm -->  it is Space--> we need to create configutation here ex --> env 
+
+
+Resourse Server - configuration:
+
+------------------------------
+Pom.xml:
+
+
+we need to add spring-boot-oauth2-resource-server  (this is dependency need to add for resourse server)
+
+
+and configuration java file:
+
+
+we need to add below configutation:
+
+.oauth2ResourceServer().jwt().jwtAuthenticationCOnverter(jwtAuthenticationCOnverter);
+
+it has to follow jwt token standdarts 
+
+
+
+class KeyCLoakroleConverter implements Converter<jwt,Collection<GrantedAuthority>
+
+
+convert method we need to ovveride from COnvert interface
+
+JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+		jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new KeycloakRoleConverter());
+
+.oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter);
+
+
+
+@Override
+	public Collection<GrantedAuthority> convert(Jwt jwt) {
+        Map<String, Object> realmAccess = (Map<String, Object>) jwt.getClaims().get("realm_access");
+
+        if (realmAccess == null || realmAccess.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        Collection<GrantedAuthority> returnValue = ((List<String>) realmAccess.get("roles"))
+                .stream().map(roleName -> "ROLE_" + roleName)  
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+ 
+        return returnValue;
+	}
+
+
+
+above code is for accessing role from openCloak into SpringSecurity Project..
+
+
+and also we need to get access token from Authorization server.
+
+below property we need to add into application.properties file
+
+
+
+spring.security.oauth2.resourceserver.jwt.jwk-set-uri = http://localhost:8080/auth/realms/SimhaBankAPI/protocol/openid-connect/certs
+
+below url we can findout all the api in the openCloak 
+
+http://localhost:8080/auth/realms/SimhaBankAPI/.well-known/openid-configuration
+
+
+access token genaration  url along with url we need to pass below things:
+
+
+
+http://localhost:8080/auth/realms/simhaBank/protocol/openid-connect/token
+
+
+client_id and client_secret
+
+scope ( openId email address) -> openId scope details and email and address details	
+
+Grant_type  'Client_Credential' which means want follow Client Credentinal grant type
+
+
+
+{
+    "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJFS0hhZmFleVA4QVNxZHBsVTRPaVFneUhQalNEaS16UXFVQTh2NDJwTlZBIn0.eyJleHAiOjE2MzA0MjE2ODcsImlhdCI6MTYzMDQyMTM4NywianRpIjoiMjY0Zjc2YjctMzQ1Ny00NDU3LTljOTItZmI2N2E1Yzk0YTNjIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NpbWhhQmFuayIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiI0NmNhNWE3ZS04MTdhLTQ5NzAtOTEyMS04OWE5M2M2ZWFkOTIiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJzaW1oYUJhbmtBUEkiLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNpbWhhYmFuayJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgYWRkcmVzcyBlbWFpbCIsImNsaWVudEhvc3QiOiIxMjcuMC4wLjEiLCJhZGRyZXNzIjp7fSwiY2xpZW50SWQiOiJzaW1oYUJhbmtBUEkiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsInByZWZlcnJlZF91c2VybmFtZSI6InNlcnZpY2UtYWNjb3VudC1zaW1oYWJhbmthcGkiLCJjbGllbnRBZGRyZXNzIjoiMTI3LjAuMC4xIn0.IYtRPotIsJQbDkNgh4hsCDeo1-v2KWgz33dtykm-xrL-3vJFhVKyfgWJVSsCHKqbIjPE125AzXZ1J6NWxIOrPjmDFE_RtrHHzNMETvWD6y6qFKZdhWGMe54ZaZXR2Qz4EEdccBqIamIKutpOEcvNcEgf4k7RHEX4nV9D-mz2GJl0HWasCqRQgsqNKm2-e25TWw8EkJFw2mVo_-0ixX6X9ig7d42lT64v8VOGMTTLlf0y_dykk9nMPiwC69HUiXzdSqmDNI_g4m7rsml7IBhflNZCVDd1P8UTVyhYZla9vLq__qK3TVIRUdsO2Ghzo9MDJPhQLRM3Aoz9phHeci02_w",
+    "expires_in": 300,
+    "refresh_expires_in": 0,
+    "token_type": "Bearer",
+    "id_token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJFS0hhZmFleVA4QVNxZHBsVTRPaVFneUhQalNEaS16UXFVQTh2NDJwTlZBIn0.eyJleHAiOjE2MzA0MjE2ODcsImlhdCI6MTYzMDQyMTM4NywiYXV0aF90aW1lIjowLCJqdGkiOiJlNjg5ZjhiNy1lNTM4LTQ5M2QtYTQ0Mi0wMTA3ZjBlYzYxZjEiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvYXV0aC9yZWFsbXMvc2ltaGFCYW5rIiwiYXVkIjoic2ltaGFCYW5rQVBJIiwic3ViIjoiNDZjYTVhN2UtODE3YS00OTcwLTkxMjEtODlhOTNjNmVhZDkyIiwidHlwIjoiSUQiLCJhenAiOiJzaW1oYUJhbmtBUEkiLCJhdF9oYXNoIjoiY1B5c0JlSHlGVkhOUUNvNW5namwtdyIsImFjciI6IjEiLCJjbGllbnRIb3N0IjoiMTI3LjAuMC4xIiwiYWRkcmVzcyI6e30sImNsaWVudElkIjoic2ltaGFCYW5rQVBJIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtc2ltaGFiYW5rYXBpIiwiY2xpZW50QWRkcmVzcyI6IjEyNy4wLjAuMSJ9.ZUrWkZq9dfjb3z5XLcV4tFBWXW2hgRAgz7KZ-TpEwsQBHX4v-HiUI0U4x_gUXvCCbiooQSkcCvhN2GO0cW9mhu8k3L8YdFZxap2Bm0484SRvR-9Yq-hmpkaLUvYYFMTrzlywMIt-b3Alm2_GQcRKMvLfuokpvuLvRcFaFqoyT8C2NogRdaKnQDydx8b7CyCEMZD9In-0Q_FQ7QB51NX_pkjEvWXqtz4N11RNFtDT_8SYf54U0jeBsj0fVtMl9MUte5Jj80Pbu0RZNAtMeI72FPaVawImeYXxCF0CtY1CtP2yAxMBJFGCH66g4BXM498KaW5QrwZe1c_EaYuBxrCgFw",
+    "not-before-policy": 0,
+    "scope": "openid profile address email"
+}
+
+
+
+
+Authorization Code Flow:
+
+instead of sending client secrete from UI to Auth server.
+
+in UI we are going genarate code challange by using code verifier.
+
+
+first step:  code challage and client id and userName and password sending to  auth serevr
+
+step2 : verify the the credentional and cleint id 
+
+and return auth code to ui
+
+
+and then UI makes another call with auth code and code_verifier. this time auth server check the code challange with code verifier. for genarating access token
+
+KeyCloak Server.. 
+
+we can configure any social network in key clock server.
+
+client id and secrete id we need to configure in keyclock server.
+
+Authorization code grant type with PKCE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+ 
+
+
+ 
